@@ -27,7 +27,32 @@ SAM 3D Objects is one part of SAM 3D, a pair of models for object and human mesh
 
 ## Installation
 
-Follow the [setup](doc/setup.md) steps before running the following.
+### Linux
+Follow the [setup](doc/setup.md) steps for Linux installation.
+
+### Windows 10
+Follow the [Windows setup guide](doc/setup_windows.md) for Windows 10 installation.
+
+## Web Demo
+
+Launch an interactive web interface using Gradio:
+
+```bash
+python web_demo.py
+```
+
+The web interface will be available at `http://localhost:7860`. You can upload images and masks to generate 3D reconstructions interactively.
+
+**Options:**
+- `--port PORT`: Change the port (default: 7860)
+- `--share`: Create a public share link
+- `--no-compile`: Disable model compilation for faster startup
+- `--server-name HOST`: Set server host (use `0.0.0.0` to allow external connections)
+
+Example:
+```bash
+python web_demo.py --port 8080 --share
+```
 
 ## Single or Multi-Object 3D Generation
 
