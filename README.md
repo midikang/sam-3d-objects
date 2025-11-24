@@ -33,6 +33,8 @@ Follow the [setup](doc/setup.md) steps for Linux installation.
 ### Windows 10
 Follow the [Windows setup guide](doc/setup_windows.md) for Windows 10 installation.
 
+**中文用户**: 查看 [中文 Windows 10 安装指南](README_CN.md)
+
 ## Web Demo
 
 Launch an interactive web interface using Gradio:
