@@ -68,11 +68,13 @@ pip install -e .[inference]
 
 ### 5. Apply Hydra Patch
 
-The Hydra library requires a small patch. Run the patching script:
+The Hydra library requires a small patch. The `patching\hydra` file is a Python script that applies this patch. Run it with:
 
 ```cmd
 python patching\hydra
 ```
+
+Note: This script will download and apply a patch to your installed Hydra package.
 
 ### 6. Download Checkpoints
 

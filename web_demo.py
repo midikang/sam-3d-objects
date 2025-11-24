@@ -19,12 +19,16 @@ try:
     import numpy as np
     from PIL import Image
     import torch
-    from inference import Inference, render_video, ready_gaussian_for_video_rendering
+    from inference import Inference
 except ImportError as e:
     print(f"Error importing required modules: {e}")
     print("\nPlease ensure you have installed all dependencies:")
     print("  pip install -e .[inference]")
     sys.exit(1)
+
+
+# Constants
+MASK_THRESHOLD = 10  # Threshold for considering a pixel as part of the mask
 
 
 def create_demo(inference_engine, checkpoint_tag="hf"):
@@ -50,7 +54,7 @@ def create_demo(inference_engine, checkpoint_tag="hf"):
                 if mask_image.shape[2] == 4:  # RGBA
                     mask = mask_image[:, :, 3] > 0
                 else:  # RGB - use any non-black pixel
-                    mask = np.any(mask_image > 10, axis=2)
+                    mask = np.any(mask_image > MASK_THRESHOLD, axis=2)
             else:  # Grayscale
                 mask = mask_image > 0
             
