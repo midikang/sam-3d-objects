@@ -1,0 +1,2515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAM 3D Objects - Interactive Course</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== CSS Custom Properties - Design System ===== */
+        :root {
+            /* Colors - Warm Palette */
+            --color-bg-primary: #FFFCF7;
+            --color-bg-secondary: #FFF8F0;
+            --color-bg-tertiary: #F5F1EB;
+            --color-text-primary: #2A2520;
+            --color-text-secondary: #59534C;
+            --color-text-tertiary: #8F8983;
+
+            /* Accent */
+            --color-accent: #E8573A;
+            --color-accent-light: #FF6B4A;
+            --color-accent-dark: #C7442B;
+
+            /* Code Blocks */
+            --color-code-bg: #1E1E2E;
+            --color-code-text: #CDD6F4;
+            --color-code-keyword: #CBA6F7;
+            --color-code-string: #A6E3A1;
+            --color-code-comment: #6C7086;
+            --color-code-function: #89B4FA;
+            --color-code-variable: #F9E2AF;
+
+            /* Typography Scale */
+            --font-display: 'Bricolage Grotesque', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 1.875rem;
+            --text-4xl: 2.25rem;
+            --text-5xl: 3rem;
+            --text-6xl: 3.75rem;
+
+            /* Spacing */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-12: 3rem;
+            --space-16: 4rem;
+            --space-24: 6rem;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(42, 37, 32, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(42, 37, 32, 0.1), 0 2px 4px -1px rgba(42, 37, 32, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(42, 37, 32, 0.1), 0 4px 6px -2px rgba(42, 37, 32, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(42, 37, 32, 0.1), 0 10px 10px -5px rgba(42, 37, 32, 0.04);
+
+            /* Layout */
+            --content-width: 720px;
+            --content-width-wide: 960px;
+        }
+
+        /* ===== Base Styles ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y proximity;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--color-text-primary);
+            background: var(--color-bg-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ===== Navigation Bar ===== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 252, 247, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(42, 37, 32, 0.1);
+            z-index: 1000;
+            padding: var(--space-4) var(--space-6);
+        }
+
+        nav .nav-content {
+            max-width: var(--content-width-wide);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h1 {
+            font-family: var(--font-display);
+            font-size: var(--text-xl);
+            font-weight: 800;
+            color: var(--color-text-primary);
+        }
+
+        nav .progress-bar {
+            flex: 1;
+            max-width: 300px;
+            height: 4px;
+            background: var(--color-bg-tertiary);
+            border-radius: 2px;
+            margin-left: var(--space-8);
+            overflow: hidden;
+        }
+
+        nav .progress-fill {
+            height: 100%;
+            background: var(--color-accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* ===== Module Sections ===== */
+        section {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: var(--space-24) var(--space-6);
+            scroll-snap-align: start;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        section:nth-child(even) {
+            background: var(--color-bg-secondary);
+        }
+
+        section:nth-child(odd) {
+            background: var(--color-bg-primary);
+        }
+
+        .module-content {
+            max-width: var(--content-width);
+            width: 100%;
+        }
+
+        .module-content.wide {
+            max-width: var(--content-width-wide);
+        }
+
+        /* ===== Typography ===== */
+        h2 {
+            font-family: var(--font-display);
+            font-size: var(--text-5xl);
+            font-weight: 800;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-6);
+            line-height: 1.1;
+        }
+
+        h3 {
+            font-family: var(--font-display);
+            font-size: var(--text-3xl);
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-4);
+            margin-top: var(--space-12);
+        }
+
+        h3:first-child {
+            margin-top: 0;
+        }
+
+        h4 {
+            font-family: var(--font-display);
+            font-size: var(--text-xl);
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-3);
+            margin-top: var(--space-8);
+        }
+
+        p {
+            font-size: var(--text-lg);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-4);
+            max-width: 65ch;
+        }
+
+        strong {
+            color: var(--color-text-primary);
+            font-weight: 600;
+        }
+
+        /* ===== Code Blocks ===== */
+        .code-translation {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-6);
+            margin: var(--space-8) 0;
+            background: var(--color-code-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .code-panel {
+            padding: var(--space-6);
+        }
+
+        .code-panel h4 {
+            font-size: var(--text-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-4);
+            margin-top: 0;
+        }
+
+        .code-panel.left {
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-panel.left h4 {
+            color: var(--color-code-function);
+        }
+
+        .code-panel.right h4 {
+            color: var(--color-code-variable);
+        }
+
+        pre {
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .code-panel.left pre {
+            color: var(--color-code-text);
+        }
+
+        .code-panel.right pre {
+            color: rgba(255, 255, 255, 0.9);
+            font-family: var(--font-body);
+            font-size: var(--text-base);
+        }
+
+        .code-line {
+            display: block;
+            margin-bottom: var(--space-2);
+        }
+
+        /* Syntax Highlighting */
+        .keyword { color: var(--color-code-keyword); }
+        .string { color: var(--color-code-string); }
+        .comment { color: var(--color-code-comment); font-style: italic; }
+        .function { color: var(--color-code-function); }
+        .variable { color: var(--color-code-variable); }
+        .number { color: #FAB387; }
+        .operator { color: #94E2D5; }
+
+        /* ===== Interactive Elements ===== */
+
+        /* Callout Boxes */
+        .callout {
+            background: linear-gradient(135deg, rgba(232, 87, 58, 0.1), rgba(232, 87, 58, 0.05));
+            border-left: 4px solid var(--color-accent);
+            padding: var(--space-6);
+            border-radius: 8px;
+            margin: var(--space-8) 0;
+        }
+
+        .callout h4 {
+            color: var(--color-accent);
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .callout h4::before {
+            content: "💡";
+            font-size: var(--text-2xl);
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-6);
+            margin: var(--space-8) 0;
+        }
+
+        .card {
+            background: white;
+            padding: var(--space-6);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-icon {
+            font-size: var(--text-4xl);
+            margin-bottom: var(--space-3);
+        }
+
+        .card h4 {
+            margin-top: 0;
+            margin-bottom: var(--space-2);
+            color: var(--color-text-primary);
+        }
+
+        .card p {
+            font-size: var(--text-base);
+            margin-bottom: 0;
+        }
+
+        /* Step Cards */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-6);
+            margin: var(--space-8) 0;
+        }
+
+        .step {
+            display: flex;
+            gap: var(--space-4);
+            align-items: flex-start;
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            background: var(--color-accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: var(--text-xl);
+        }
+
+        .step-content h4 {
+            margin-top: 0;
+        }
+
+        /* Data Flow Animation */
+        .data-flow {
+            margin: var(--space-12) 0;
+            padding: var(--space-8);
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+
+        .flow-node {
+            flex: 1;
+            min-width: 120px;
+            padding: var(--space-4);
+            background: var(--color-bg-secondary);
+            border: 2px solid var(--color-accent);
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .flow-arrow {
+            font-size: var(--text-2xl);
+            color: var(--color-accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Group Chat Animation */
+        .group-chat {
+            margin: var(--space-12) 0;
+            padding: var(--space-8);
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            max-width: 600px;
+        }
+
+        .chat-message {
+            margin-bottom: var(--space-4);
+            opacity: 0;
+            animation: messageSlideIn 0.5s ease forwards;
+        }
+
+        .chat-message:nth-child(1) { animation-delay: 0.5s; }
+        .chat-message:nth-child(2) { animation-delay: 1.5s; }
+        .chat-message:nth-child(3) { animation-delay: 3s; }
+        .chat-message:nth-child(4) { animation-delay: 4.5s; }
+        .chat-message:nth-child(5) { animation-delay: 6s; }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: var(--space-3) var(--space-4);
+            border-radius: 18px;
+            margin-bottom: var(--space-1);
+        }
+
+        .chat-message.left .chat-bubble {
+            background: var(--color-bg-tertiary);
+            margin-right: auto;
+        }
+
+        .chat-message.right .chat-bubble {
+            background: var(--color-accent);
+            color: white;
+            margin-left: auto;
+        }
+
+        .chat-sender {
+            font-size: var(--text-sm);
+            color: var(--color-text-tertiary);
+            margin-bottom: var(--space-1);
+            font-weight: 600;
+        }
+
+        .chat-message.right .chat-sender {
+            text-align: right;
+        }
+
+        /* Quiz */
+        .quiz {
+            margin: var(--space-12) 0;
+            padding: var(--space-8);
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .quiz h4 {
+            margin-top: 0;
+            color: var(--color-accent);
+        }
+
+        .quiz-question {
+            margin-bottom: var(--space-8);
+        }
+
+        .quiz-question:last-child {
+            margin-bottom: 0;
+        }
+
+        .quiz-question p {
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-4);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .quiz-option {
+            padding: var(--space-4);
+            background: var(--color-bg-secondary);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--color-accent);
+            background: var(--color-bg-primary);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--color-accent);
+            background: rgba(232, 87, 58, 0.1);
+        }
+
+        .quiz-option.correct {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        .quiz-feedback {
+            margin-top: var(--space-4);
+            padding: var(--space-4);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4CAF50;
+            color: #2E7D32;
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid #f44336;
+            color: #C62828;
+        }
+
+        /* Glossary Tooltips */
+        .tooltip-term {
+            border-bottom: 2px dashed var(--color-accent);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tooltip-content {
+            position: fixed;
+            background: var(--color-code-bg);
+            color: white;
+            padding: var(--space-3) var(--space-4);
+            border-radius: 8px;
+            font-size: var(--text-sm);
+            max-width: 300px;
+            box-shadow: var(--shadow-xl);
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .tooltip-content.show {
+            opacity: 1;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: var(--space-24) var(--space-6);
+        }
+
+        .hero h2 {
+            font-size: var(--text-6xl);
+            margin-bottom: var(--space-8);
+        }
+
+        .hero p {
+            font-size: var(--text-2xl);
+            margin: 0 auto var(--space-6);
+        }
+
+        .hero-visual {
+            margin: var(--space-12) auto;
+            max-width: 800px;
+        }
+
+        /* Architecture Diagram */
+        .architecture {
+            margin: var(--space-12) 0;
+            padding: var(--space-8);
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .arch-layer {
+            margin-bottom: var(--space-6);
+            padding: var(--space-6);
+            background: var(--color-bg-secondary);
+            border-radius: 8px;
+            border-left: 4px solid var(--color-accent);
+        }
+
+        .arch-layer h4 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .arch-components {
+            display: flex;
+            gap: var(--space-3);
+            flex-wrap: wrap;
+            margin-top: var(--space-4);
+        }
+
+        .arch-component {
+            padding: var(--space-2) var(--space-4);
+            background: white;
+            border-radius: 6px;
+            font-size: var(--text-sm);
+            font-weight: 500;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .code-translation {
+                grid-template-columns: 1fr;
+            }
+
+            .code-panel.left {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            nav .progress-bar {
+                display: none;
+            }
+
+            h2 {
+                font-size: var(--text-4xl);
+            }
+
+            .hero h2 {
+                font-size: var(--text-5xl);
+            }
+        }
+
+        /* Scroll Progress Indicator */
+        .scroll-indicator {
+            position: fixed;
+            bottom: var(--space-6);
+            right: var(--space-6);
+            background: var(--color-accent);
+            color: white;
+            padding: var(--space-3) var(--space-4);
+            border-radius: 24px;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            box-shadow: var(--shadow-lg);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .scroll-indicator.show {
+            opacity: 1;
+        }
+
+        /* Keyboard Navigation Hint */
+        .keyboard-hint {
+            position: fixed;
+            bottom: var(--space-6);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(42, 37, 32, 0.9);
+            color: white;
+            padding: var(--space-2) var(--space-4);
+            border-radius: 20px;
+            font-size: var(--text-sm);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .keyboard-hint.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-content">
+            <h1>SAM 3D Objects Course</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator" id="scrollIndicator">Module 1 of 7</div>
+
+    <!-- Keyboard Hint -->
+    <div class="keyboard-hint" id="keyboardHint">Use ↑↓ arrow keys to navigate</div>
+
+    <!-- Tooltip Container -->
+    <div class="tooltip-content" id="tooltip"></div>
+
+    <!-- Module 1: From Photo to 3D -->
+    <section id="module1">
+        <div class="module-content">
+            <div class="hero">
+                <h2>From Photo to 3D</h2>
+                <p>Imagine pointing your phone at a toy car, taking a photo, and instantly getting a full 3D model you can view from any angle.</p>
+                <p>That's what SAM 3D Objects does. And you're about to learn exactly how.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>What SAM 3D Objects Does</h3>
+            <p>SAM 3D Objects is a <span class="tooltip-term" data-tooltip="AI: Artificial Intelligence — software that can learn patterns from examples and make decisions, rather than just following pre-programmed rules. When you say 'make this image sharper,' AI figures out HOW to do that by learning from millions of example images.">AI</span> model that takes a single photo of an object and reconstructs it in full 3D.</p>
+
+            <p>Not just a rough outline — a complete 3D model with:</p>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">📐</div>
+                    <h4>Shape</h4>
+                    <p>The exact 3D geometry of the object</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎨</div>
+                    <h4>Texture</h4>
+                    <p>Colors and surface details</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📍</div>
+                    <h4>Position</h4>
+                    <p>Where it sits in 3D space</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📏</div>
+                    <h4>Scale</h4>
+                    <p>Real-world size estimates</p>
+                </div>
+            </div>
+
+            <p>You can export the result as a <span class="tooltip-term" data-tooltip="PLY: A 3D file format that stores point clouds or meshes. Think of it like a JPEG for 3D data — a standard way to save 3D geometry that works in Blender, MeshLab, and other 3D tools.">PLY</span> file for <span class="tooltip-term" data-tooltip="Gaussian Splats: A way to represent 3D scenes as clouds of 3D blobs (Gaussians) with color and transparency. Faster to render than traditional meshes. Imagine fireflies frozen in 3D space — each firefly is a Gaussian with a position, color, and glow radius.">Gaussian Splats</span> or a <span class="tooltip-term" data-tooltip="GLB: A 3D file format (part of the glTF standard) that packages meshes, textures, and materials into a single file. Like a ZIP file for 3D models — everything bundled together. Used in web 3D, AR apps, and game engines.">GLB</span> file for textured <span class="tooltip-term" data-tooltip="Mesh: A 3D surface made of triangles. Like a paper model where you fold flat triangles into a 3D shape. Every 3D character, building, or object in a video game is a mesh.">meshes</span>.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>The User Journey</h3>
+            <p>Let's trace what happens when you run the model. Imagine you have this photo of a toy elephant sitting on a table:</p>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>You provide an image and a mask</h4>
+                        <p>The image shows the scene. The mask tells the model which object you care about (the elephant, not the table).</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>The model loads 6 neural networks</h4>
+                        <p>Each network has a specific job — estimating depth, generating sparse structure, adding details, decoding to 3D formats.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Depth estimation figures out "how far"</h4>
+                        <p>A depth model analyzes the photo and creates a <span class="tooltip-term" data-tooltip="Point Map: A 3D representation where each pixel in the image gets assigned an (x, y, z) coordinate in 3D space. Like a height map in a video game, but in full 3D — tells you how far each pixel is from the camera.">point map</span> — a guess at the 3D position of every pixel.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Stage 1 generates sparse structure</h4>
+                        <p>The first generator decides WHERE stuff is in 3D — which parts of a 16×16×16 <span class="tooltip-term" data-tooltip="Voxel Grid: A 3D grid of cubes (voxels) like pixels, but in 3D. Imagine Minecraft blocks — each cube either has stuff in it or doesn't. Used to represent 3D shapes in a grid format.">voxel grid</span> are occupied.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>Stage 2 adds appearance details</h4>
+                        <p>The second generator fills in WHAT those occupied spots look like — colors, textures, fine details.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h4>Decoders convert to 3D outputs</h4>
+                        <p>The latent features get decoded into actual 3D formats — Gaussian splats (a cloud of 3D points with color) or triangle meshes.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <h4>Post-processing refines the result</h4>
+                        <p>Optional cleanup — align the model to the depth map, simplify the mesh, bake textures into image files.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Meet the Actors</h3>
+            <p>Think of SAM 3D Objects as a factory assembly line with specialized workers. Here's the cast of characters:</p>
+
+            <div class="group-chat">
+                <div class="chat-message left">
+                    <div class="chat-sender">📷 Depth Model (MoGe)</div>
+                    <div class="chat-bubble">I analyze the photo and estimate how far away everything is. Here's a 3D point cloud from the image.</div>
+                </div>
+
+                <div class="chat-message right">
+                    <div class="chat-sender">🔲 Stage 1 Generator</div>
+                    <div class="chat-bubble">Got it. I'll decide WHERE the object exists in 3D. Generating sparse structure...</div>
+                </div>
+
+                <div class="chat-message left">
+                    <div class="chat-sender">🎨 Stage 2 Generator</div>
+                    <div class="chat-bubble">I'll take those positions and fill in WHAT they look like — colors and fine details.</div>
+                </div>
+
+                <div class="chat-message right">
+                    <div class="chat-sender">✨ Gaussian Decoder</div>
+                    <div class="chat-bubble">I'll convert that into a cloud of 3D splats you can render from any angle.</div>
+                </div>
+
+                <div class="chat-message left">
+                    <div class="chat-sender">📐 Mesh Decoder</div>
+                    <div class="chat-bubble">And I'll turn it into a triangle mesh you can load in Blender or Unity.</div>
+                </div>
+            </div>
+
+            <div class="callout">
+                <h4>Why This Matters</h4>
+                <p>When you're steering an AI coding tool to modify SAM 3D Objects, knowing which component does what helps you give better instructions.</p>
+                <p>Want faster generation? "Reduce inference_steps in the Stage 1 generator config." Want better textures? "Increase latent dimensions in Stage 2."</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>What This Code Actually Looks Like</h3>
+            <p>Here's the entry point — the code you'd run to generate a 3D model:</p>
+
+            <div class="code-translation">
+                <div class="code-panel left">
+                    <h4>Real Code</h4>
+                    <pre><code><span class="keyword">from</span> inference <span class="keyword">import</span> Inference
+
+<span class="comment"># Load the model</span>
+inference = <span class="function">Inference</span>(
+    <span class="string">"checkpoints/hf/pipeline.yaml"</span>,
+    compile=<span class="keyword">False</span>
+)
+
+<span class="comment"># Run inference</span>
+output = <span class="function">inference</span>(image, mask, seed=<span class="number">42</span>)
+
+<span class="comment"># Export Gaussian splat</span>
+output[<span class="string">"gs"</span>].<span class="function">save_ply</span>(<span class="string">"splat.ply"</span>)</code></pre>
+                </div>
+                <div class="code-panel right">
+                    <h4>What It Means</h4>
+                    <pre>Import the inference tool
+
+Load all 6 neural networks from a config file.
+Don't compile the models for speed (skip optimization).
+
+Run the full pipeline: depth → sparse structure →
+latents → 3D outputs. Use random seed 42 for
+reproducible results.
+
+Take the Gaussian splat representation and save
+it as a PLY file you can open in other 3D software.</pre>
+                </div>
+            </div>
+
+            <div class="callout">
+                <h4>Aha! Config Files Separate Logic from Settings</h4>
+                <p>Instead of hardcoding model paths and hyperparameters in Python, SAM 3D uses <span class="tooltip-term" data-tooltip="YAML: A human-readable text format for configuration files. Like JSON but easier to read and write. Used to define settings without editing code. Example: model_path: checkpoints/model.pt">YAML</span> config files.</p>
+                <p>This is a universal pattern in AI projects — it lets you swap models, change settings, or run experiments without touching code. When building your own tools, use config files instead of magic numbers scattered through your codebase.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Module 1 Quiz</h3>
+
+            <div class="quiz">
+                <h4>Test Your Understanding</h4>
+
+                <div class="quiz-question" data-answer="2">
+                    <p>1. You want to build a similar tool that converts sketches to 3D. Which component's job would change the most?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">The Gaussian decoder — it would need to output vector art instead of splats</div>
+                        <div class="quiz-option" data-value="1">The mesh decoder — sketches don't need triangles</div>
+                        <div class="quiz-option" data-value="2">The depth model — sketches have no depth info, so you'd need a different approach</div>
+                        <div class="quiz-option" data-value="3">The post-processing step — sketches don't need texture baking</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="1">
+                    <p>2. A user reports their generated models are rotated 90° wrong. Based on what you learned, where would you look first?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Stage 2 generator — it handles appearance, which includes orientation</div>
+                        <div class="quiz-option" data-value="1">Pose decoder — it estimates rotation, translation, and scale</div>
+                        <div class="quiz-option" data-value="2">Mesh decoder — it creates the final geometry</div>
+                        <div class="quiz-option" data-value="3">Config file — probably a typo in the YAML</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="3">
+                    <p>3. You want to add a feature that estimates the real-world size of objects in centimeters. Which existing component already does something similar?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Stage 1 generator — it knows the voxel grid size</div>
+                        <div class="quiz-option" data-value="1">Gaussian decoder — it outputs positions in meters</div>
+                        <div class="quiz-option" data-value="2">Config file — scale is probably hardcoded there</div>
+                        <div class="quiz-option" data-value="3">Pose decoder — it already estimates scale as part of scene-aware pose estimation</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Module 2: The Two-Stage Architecture -->
+    <section id="module2">
+        <div class="module-content">
+            <div class="hero">
+                <h2>The Two-Stage Architecture</h2>
+                <p>Why does SAM 3D use TWO generators instead of one?</p>
+                <p>Because building a 3D model is like building a house — you pour the foundation first (WHERE), then decorate (WHAT).</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>The Foundation: Stage 1</h3>
+            <p>Stage 1 answers: <strong>"Which parts of 3D space are occupied?"</strong></p>
+
+            <p>Think of it like playing Battleship. You're not placing individual ships — you're marking which grid squares have SOMETHING in them.</p>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">📥</div>
+                    <h4>Input</h4>
+                    <p>518×518 RGB image of the object</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🧠</div>
+                    <h4>Process</h4>
+                    <p>Diffusion transformer generates sparse voxel coordinates</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📤</div>
+                    <h4>Output</h4>
+                    <p>List of (x, y, z) coordinates marking occupied spots in a 16×16×16 grid</p>
+                </div>
+            </div>
+
+            <div class="callout">
+                <h4>Why Sparse?</h4>
+                <p>A dense 16×16×16 grid has 4,096 voxels. But most objects only occupy 10-20% of the space — the rest is empty air.</p>
+                <p>Stage 1 only outputs the ~500 coordinates that actually contain the object. This saves memory and makes Stage 2 way faster.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Stage 1 Under the Hood</h3>
+
+            <div class="code-translation">
+                <div class="code-panel left">
+                    <h4>Real Code</h4>
+                    <pre><code><span class="comment"># Embed image condition</span>
+img_cond = <span class="function">cond_embedder</span>(image)
+
+<span class="comment"># Run diffusion generator</span>
+latent = <span class="function">ss_generator</span>.sample(
+    img_cond,
+    steps=<span class="number">50</span>,
+    cfg_strength=<span class="number">3.0</span>
+)
+
+<span class="comment"># Decode to voxel grid</span>
+voxels = <span class="function">ss_decoder</span>(latent)
+
+<span class="comment"># Extract occupied coordinates</span>
+coords = voxels.<span class="function">nonzero</span>()</code></pre>
+                </div>
+                <div class="code-panel right">
+                    <h4>What It Means</h4>
+                    <pre>Convert the image into a format the generator understands
+(learned embeddings, not raw pixels)
+
+Generate a latent code through 50 steps of diffusion.
+cfg_strength=3.0 means "follow the image closely"
+
+Convert the abstract latent code into a 16×16×16
+binary voxel grid (1 = occupied, 0 = empty)
+
+Find all grid positions where voxel value = 1.
+Returns [(0,2,5), (0,3,5), ...] — coordinates of the object</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>The Details: Stage 2</h3>
+            <p>Stage 2 answers: <strong>"What do those occupied spots actually look like?"</strong></p>
+
+            <p>It's like coloring in a numbered coloring book. Stage 1 gave you the outline (which squares to fill). Stage 2 picks the colors and textures.</p>
+
+            <div class="data-flow">
+                <h4>Data Flow Through Stage 2</h4>
+                <div class="flow-diagram">
+                    <div class="flow-node">Image + Coords</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">Condition Embedder</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">SLAT Generator</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">8D Features per Voxel</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">SparseTensor</div>
+                </div>
+            </div>
+
+            <p>The output is a <span class="tooltip-term" data-tooltip="SparseTensor: A data structure for storing 3D data where most of the grid is empty. Instead of storing a full 16×16×16 array (mostly zeros), it only stores the non-zero entries with their coordinates. Like a dictionary mapping (x,y,z) → feature_vector.">SparseTensor</span> — a data structure containing:</p>
+            <ul style="list-style: none; padding-left: 0;">
+                <li style="margin-bottom: var(--space-3);">✅ <strong>Coordinates</strong>: The (x, y, z) positions from Stage 1</li>
+                <li style="margin-bottom: var(--space-3);">✅ <strong>Features</strong>: An 8-dimensional vector for each coordinate describing appearance</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Stage 2 Under the Hood</h3>
+
+            <div class="code-translation">
+                <div class="code-panel left">
+                    <h4>Real Code</h4>
+                    <pre><code><span class="comment"># Embed image condition</span>
+img_cond = <span class="function">cond_embedder</span>(image)
+
+<span class="comment"># Run SLAT generator with coords</span>
+latent = <span class="function">slat_generator</span>.sample(
+    img_cond,
+    coords=sparse_coords,
+    steps=<span class="number">50</span>,
+    cfg_strength=<span class="number">3.0</span>
+)
+
+<span class="comment"># Normalize latent features</span>
+latent = (latent - slat_mean) / slat_std
+
+<span class="comment"># Create sparse tensor</span>
+slat = <span class="function">SparseTensor</span>(sparse_coords, latent)</code></pre>
+                </div>
+                <div class="code-panel right">
+                    <h4>What It Means</h4>
+                    <pre>Same as Stage 1 — convert image to learned features
+
+Generate appearance features, but ONLY for the
+sparse coordinates from Stage 1. This is way more
+efficient than generating for all 4,096 voxels.
+
+Standardize the features to have mean=0, std=1.
+Makes the decoders easier to train.
+
+Package coordinates + features into a sparse format
+that GPUs can process efficiently</pre>
+                </div>
+            </div>
+
+            <div class="callout">
+                <h4>Aha! Two-Stage = Coarse-to-Fine</h4>
+                <p>This pattern appears everywhere in <span class="tooltip-term" data-tooltip="Computer Vision: The field of AI that teaches computers to understand images and videos. Tasks include: recognizing objects, estimating depth, tracking motion, generating images. Powers face unlock, self-driving cars, and AR filters.">computer vision</span>.</p>
+                <p>First pass: rough structure (low resolution, fast). Second pass: fine details (high resolution, slow but focused).</p>
+                <p>You'll see this in image generation (latent diffusion), video compression (I-frames vs P-frames), and 3D reconstruction. When building multi-stage pipelines, ask: "What's the coarse version? What's the refinement?"</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Module 2 Quiz</h3>
+
+            <div class="quiz">
+                <h4>Test Your Understanding</h4>
+
+                <div class="quiz-question" data-answer="1">
+                    <p>1. You're building a version of SAM 3D that runs on mobile phones. Inference is too slow. What would you try first?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Skip Stage 2 entirely — you don't need appearance on mobile</div>
+                        <div class="quiz-option" data-value="1">Reduce inference_steps in both generators from 50 to 25</div>
+                        <div class="quiz-option" data-value="2">Increase the voxel grid from 16×16×16 to 8×8×8</div>
+                        <div class="quiz-option" data-value="3">Remove the depth model — it's probably the slowest part</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="2">
+                    <p>2. A user's generated models have great shape but blurry, low-detail textures. Which stage likely needs improvement?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Stage 1 — it determines where features go</div>
+                        <div class="quiz-option" data-value="1">The depth model — better depth = better textures</div>
+                        <div class="quiz-option" data-value="2">Stage 2 — it generates the appearance features that become textures</div>
+                        <div class="quiz-option" data-value="3">The config file — texture resolution is probably set too low</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="0">
+                    <p>3. You want to add a third stage that generates animations (moving parts). Where would it fit in the pipeline?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">After Stage 2 — it would take the sparse tensor and add temporal latents</div>
+                        <div class="quiz-option" data-value="1">Before Stage 1 — need to plan animation before generating structure</div>
+                        <div class="quiz-option" data-value="2">Replace Stage 2 — animations don't need appearance features</div>
+                        <div class="quiz-option" data-value="3">In parallel with Stage 1 — structure and motion are independent</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Module 3: Sparse Representations -->
+    <section id="module3">
+        <div class="module-content">
+            <div class="hero">
+                <h2>Sparse Representations</h2>
+                <p>How do you store a 3D model in a way that's fast, memory-efficient, and GPU-friendly?</p>
+                <p>The answer: only remember the parts that matter.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>The Problem With Dense Grids</h3>
+            <p>Imagine you want to represent a coffee mug in 3D using a grid of cubes (voxels).</p>
+
+            <p>If you use a <strong>64×64×64 dense grid</strong>, you're storing <strong>262,144 voxels</strong>. But the mug only occupies maybe 5% of that space — the rest is empty air.</p>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">💾</div>
+                    <h4>Memory Waste</h4>
+                    <p>Storing 250,000 zeros for "empty" is wasteful</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🐌</div>
+                    <h4>Slow Processing</h4>
+                    <p>GPU wastes time processing empty voxels</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h4>Can't Scale Up</h4>
+                    <p>Want 128×128×128? That's 2 million voxels — too big for GPU memory</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>The Solution: Sparse Tensors</h3>
+            <p>A sparse tensor only stores the occupied voxels.</p>
+
+            <p>Think of it like a city map. Instead of marking every empty lot, you just list the addresses of buildings that exist.</p>
+
+            <div class="data-flow">
+                <h4>Dense vs Sparse</h4>
+                <div class="flow-diagram">
+                    <div class="flow-node">Dense: Store ALL 4,096 voxels<br>(mostly zeros)</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">Sparse: Store ONLY ~500 occupied voxels<br>+ their coordinates</div>
+                </div>
+            </div>
+
+            <div class="callout">
+                <h4>Memory Savings</h4>
+                <p>For a 16×16×16 grid where 10% is occupied:</p>
+                <ul style="list-style: none; padding-left: 0;">
+                    <li>🔴 <strong>Dense</strong>: 4,096 values × 8 bytes = 32 KB</li>
+                    <li>🟢 <strong>Sparse</strong>: 410 coordinates × 4 bytes + 410 values × 8 bytes = 5 KB</li>
+                </ul>
+                <p><strong>85% memory savings!</strong> And that's for a tiny 16³ grid — for 64³ it's 99% savings.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>How SparseTensor Works</h3>
+
+            <div class="code-translation">
+                <div class="code-panel left">
+                    <h4>Real Code</h4>
+                    <pre><code><span class="keyword">class</span> <span class="function">SparseTensor</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, coords, feats):
+        self.coords = coords  <span class="comment"># [N, 4]</span>
+        self.feats = feats    <span class="comment"># [N, C]</span>
+
+    <span class="keyword">def</span> <span class="function">to_dense</span>(self):
+        <span class="comment"># Convert to full grid</span>
+        grid = torch.<span class="function">zeros</span>(B, C, H, W, D)
+        grid[coords] = feats
+        <span class="keyword">return</span> grid</code></pre>
+                </div>
+                <div class="code-panel right">
+                    <h4>What It Means</h4>
+                    <pre>Define a sparse 3D data structure
+
+coords stores: batch index + (x, y, z) for each point.
+Shape [N, 4] where N = number of occupied voxels
+
+feats stores: C-dimensional feature vector for each point.
+Shape [N, C] where C = feature dimension (often 8)
+
+If you need the full grid (for visualization), fill a
+zero tensor and scatter the sparse values into it.
+Slow, so only used when necessary</pre>
+                </div>
+            </div>
+
+            <p>The key insight: coords and feats are <strong>parallel arrays</strong>. Position i in both arrays describes the same voxel.</p>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">📍</div>
+                    <h4>coords[i]</h4>
+                    <p>[batch, x, y, z] — WHERE the voxel is</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎨</div>
+                    <h4>feats[i]</h4>
+                    <p>[f₀, f₁, ..., f₇] — WHAT the voxel contains</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Sparse Operations on GPU</h3>
+            <p>SAM 3D uses libraries like <span class="tooltip-term" data-tooltip="spconv: A library for sparse 3D convolutions on GPUs. Like regular convolution (used in image processing) but optimized for 3D data where most voxels are empty. Built by NVIDIA for point cloud processing.">spconv</span> and <span class="tooltip-term" data-tooltip="torchsparse: Another library for sparse 3D operations, from the MinkowskiNet project. Alternative to spconv with similar goals — fast sparse convolutions for 3D data.">torchsparse</span> to run <span class="tooltip-term" data-tooltip="Convolution: A mathematical operation that slides a small filter over data to extract patterns. In images, it finds edges, textures, and shapes. In 3D, it finds geometric features. The core building block of modern computer vision.">convolutions</span> on sparse data.</p>
+
+            <p>Think of it like this: instead of scanning EVERY voxel in a 16×16×16 grid (4,096 operations), you only scan the ~500 occupied voxels.</p>
+
+            <div class="group-chat">
+                <div class="chat-message left">
+                    <div class="chat-sender">🧠 Neural Network</div>
+                    <div class="chat-bubble">I need to process this 3D shape. Where are the voxels?</div>
+                </div>
+
+                <div class="chat-message right">
+                    <div class="chat-sender">📦 SparseTensor</div>
+                    <div class="chat-bubble">Only 487 voxels are occupied. Here's the list: [(0,2,5), (0,3,5), ...]</div>
+                </div>
+
+                <div class="chat-message left">
+                    <div class="chat-sender">⚡ spconv (GPU Library)</div>
+                    <div class="chat-bubble">Got it. I'll run convolution on just those 487 positions. Done in 2ms instead of 50ms!</div>
+                </div>
+
+                <div class="chat-message right">
+                    <div class="chat-sender">📦 SparseTensor</div>
+                    <div class="chat-bubble">Here's the result: 487 feature vectors, same coordinates.</div>
+                </div>
+            </div>
+
+            <div class="callout">
+                <h4>Aha! Sparse = Fast When Mostly Empty</h4>
+                <p>Sparse operations are only faster when <strong>less than ~20% of the grid is occupied</strong>.</p>
+                <p>If your data is dense (like a solid cube filling 80% of the grid), dense operations are actually faster because you avoid the overhead of tracking coordinates.</p>
+                <p>When choosing data structures, ask: "Is my data naturally sparse?" Images → dense. Point clouds → sparse. Meshes → depends on voxelization.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Module 3 Quiz</h3>
+
+            <div class="quiz">
+                <h4>Test Your Understanding</h4>
+
+                <div class="quiz-question" data-answer="2">
+                    <p>1. You're processing a scene with 10 objects scattered in a large room. The voxel grid is 128×128×128. Should you use sparse or dense representation?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Dense — large grids work better with dense operations</div>
+                        <div class="quiz-option" data-value="1">Dense — 10 objects is a lot of occupancy</div>
+                        <div class="quiz-option" data-value="2">Sparse — most of the room is empty air, so sparse saves massive memory</div>
+                        <div class="quiz-option" data-value="3">Doesn't matter — sparse and dense are the same speed on modern GPUs</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="1">
+                    <p>2. Your sparse tensor has coords.shape = [800, 4] and feats.shape = [800, 16]. How many occupied voxels are there, and what's the feature dimension?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">4 voxels, 800-dimensional features</div>
+                        <div class="quiz-option" data-value="1">800 voxels, 16-dimensional features</div>
+                        <div class="quiz-option" data-value="2">16 voxels, 800-dimensional features</div>
+                        <div class="quiz-option" data-value="3">3,200 voxels (800×4), 16-dimensional features</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="0">
+                    <p>3. You notice Stage 2 is slow. Profiling shows 90% of time is spent in sparse convolutions. What would help most?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Reduce the number of occupied voxels from Stage 1 (downsample sparse coords)</div>
+                        <div class="quiz-option" data-value="1">Switch from sparse to dense operations</div>
+                        <div class="quiz-option" data-value="2">Increase GPU memory — sparse ops are memory-bound</div>
+                        <div class="quiz-option" data-value="3">Use CPU instead of GPU for sparse operations</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Module 4: Depth Maps and Scene Awareness -->
+    <section id="module4">
+        <div class="module-content">
+            <div class="hero">
+                <h2>Depth Maps</h2>
+                <p>How does SAM 3D know how FAR things are?</p>
+                <p>Meet the depth model — the component that gives the system spatial awareness.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>What Is a Depth Map?</h3>
+            <p>A depth map is like a photograph where each pixel stores "distance from camera" instead of color.</p>
+
+            <p>Think of it like thermal imaging. A thermal camera shows temperature at each pixel. A depth camera shows distance at each pixel.</p>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">📷</div>
+                    <h4>RGB Image</h4>
+                    <p>Each pixel: (R, G, B) color values</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📏</div>
+                    <h4>Depth Map</h4>
+                    <p>Each pixel: (X, Y, Z) 3D coordinates</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎨</div>
+                    <h4>Point Map</h4>
+                    <p>RGB + Depth = Colored 3D point cloud</p>
+                </div>
+            </div>
+
+            <p>SAM 3D uses a model called <span class="tooltip-term" data-tooltip="MoGe: A Microsoft depth estimation model that predicts metric-scale depth (actual distances in meters) from single images. Unlike relative depth models, MoGe gives you real-world scale, not just 'this is closer than that.'">MoGe</span> to estimate depth from a single photo — no special cameras needed.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Why Depth Matters</h3>
+            <p>The depth map guides THREE critical parts of SAM 3D:</p>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Coordinate Normalization</h4>
+                        <p>The generators work in a normalized 16×16×16 grid. The depth map tells us how to map that grid to real-world scale — is this a tiny toy or a large building?</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Pose Estimation</h4>
+                        <p>The pose decoder uses depth geometry to estimate how the object is rotated and where it's positioned. Without depth, it would have to guess purely from appearance.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Layout Optimization</h4>
+                        <p>After generation, the system aligns the 3D model to the depth map using <span class="tooltip-term" data-tooltip="ICP: Iterative Closest Point — an algorithm that aligns two 3D shapes by finding the best rotation and translation that minimizes distance between corresponding points. Like fitting puzzle pieces together by trying different rotations until they snap into place.">ICP</span> (a 3D alignment algorithm). This ensures the final model matches the scene geometry.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>How Depth Estimation Works</h3>
+
+            <div class="code-translation">
+                <div class="code-panel left">
+                    <h4>Real Code</h4>
+                    <pre><code><span class="comment"># Load depth model</span>
+depth_model = MoGe.<span class="function">from_pretrained</span>(
+    <span class="string">"Ruicheng/moge-vitl"</span>
+)
+
+<span class="comment"># Predict depth</span>
+output = <span class="function">depth_model</span>.<span class="function">infer</span>(image)
+points_3d = output[<span class="string">'points'</span>]  <span class="comment"># [H, W, 3]</span>
+
+<span class="comment"># Extract scene scale</span>
+scene_scale = <span class="function">compute_scale</span>(points_3d)
+scene_shift = <span class="function">compute_shift</span>(points_3d)</code></pre>
+                </div>
+                <div class="code-panel right">
+                    <h4>What It Means</h4>
+                    <pre>Download and load a pre-trained depth estimation model.
+MoGe is trained on millions of images with depth labels.
+
+Run the model on the input image.
+Returns a 3D point map: each pixel gets (x, y, z) coordinates
+in 3D space. Shape: image height × width × 3
+
+Figure out the real-world scale of the scene.
+scene_scale tells you "1 unit in the 16×16×16 grid =
+X meters in reality". Crucial for realistic proportions.</pre>
+                </div>
+            </div>
+
+            <div class="callout">
+                <h4>Aha! Depth from a Single Image Is Ambiguous</h4>
+                <p>Given just one photo, you can't perfectly know depth — is that a small object close-up or a large object far away?</p>
+                <p>MoGe uses learned priors from training data: "Tables are usually waist-high. Mugs are usually palm-sized. Floors are usually flat." These assumptions let it estimate metric-scale depth surprisingly well.</p>
+                <p>When building vision systems, remember: single-view 3D is always a best guess. Multi-view (stereo, video) gives ground truth.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Layout Optimization in Action</h3>
+            <p>After generating the 3D model, SAM 3D runs an optional post-processing step that aligns the generated geometry to the depth map.</p>
+
+            <div class="data-flow">
+                <h4>ICP Alignment Process</h4>
+                <div class="flow-diagram">
+                    <div class="flow-node">Generated 3D Model</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">Render to Depth</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">Compare to MoGe Depth</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">Adjust Pose/Scale</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">Aligned Model</div>
+                </div>
+            </div>
+
+            <p>This is like 3D Photoshop's "auto-align layers" — it nudges the model until it snaps into the right position.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Module 4 Quiz</h3>
+
+            <div class="quiz">
+                <h4>Test Your Understanding</h4>
+
+                <div class="quiz-question" data-answer="1">
+                    <p>1. You're generating 3D models of indoor scenes. Users report that furniture sizes are inconsistent — a chair might be tiny or huge. What's likely the issue?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Stage 1 generator needs retraining on furniture data</div>
+                        <div class="quiz-option" data-value="1">Depth model (MoGe) is giving incorrect scale estimates for the scene</div>
+                        <div class="quiz-option" data-value="2">The voxel grid resolution (16×16×16) is too low for furniture</div>
+                        <div class="quiz-option" data-value="3">Config file has wrong units (meters vs centimeters)</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="2">
+                    <p>2. You want to skip the depth model to make inference faster. What would break?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Nothing — depth is optional</div>
+                        <div class="quiz-option" data-value="1">Only layout optimization would fail, but core generation still works</div>
+                        <div class="quiz-option" data-value="2">Pose estimation, coordinate normalization, AND layout optimization all rely on depth</div>
+                        <div class="quiz-option" data-value="3">Only the point map visualization would be missing</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="0">
+                    <p>3. You're building a multi-object version that generates entire rooms. How would you use the depth map differently?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Segment the depth map by object masks, normalize each object's coordinates independently</div>
+                        <div class="quiz-option" data-value="1">Skip depth entirely — too slow for multiple objects</div>
+                        <div class="quiz-option" data-value="2">Use the same global depth map for all objects without segmentation</div>
+                        <div class="quiz-option" data-value="3">Run MoGe separately on each cropped object</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Module 5: Diffusion Transformers -->
+    <section id="module5">
+        <div class="module-content">
+            <div class="hero">
+                <h2>Diffusion Transformers</h2>
+                <p>How do the generators actually CREATE 3D models from scratch?</p>
+                <p>The answer: they start with noise and gradually refine it into structure.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>What Is Diffusion?</h3>
+            <p>Imagine you're trying to sculpt a face from a block of marble. You don't chisel the final details immediately — you start rough and refine.</p>
+
+            <p><span class="tooltip-term" data-tooltip="Diffusion Model: A type of generative AI that creates data by starting with random noise and iteratively denoising it. Like developing a photo in a darkroom — the image gradually becomes clearer. Used in Stable Diffusion, DALL-E 3, and SAM 3D.">Diffusion models</span> work the same way:</p>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Start with random noise</h4>
+                        <p>Pure static — a random tensor that looks nothing like the target.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Denoise step by step</h4>
+                        <p>Run the neural network 50 times (or however many inference_steps you set). Each step removes a bit of noise and adds structure.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Condition on the image</h4>
+                        <p>At each step, the model looks at the input image and asks: "What 3D structure would match this photo?" This guides the denoising toward the right answer.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>End with clean latent</h4>
+                        <p>After 50 steps, the noise has been refined into a structured latent code representing the 3D object.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Classifier-Free Guidance</h3>
+            <p>There's a trick called <span class="tooltip-term" data-tooltip="Classifier-Free Guidance (CFG): A technique that makes diffusion models follow prompts more closely. It compares 'generation with prompt' vs 'generation without prompt' and amplifies the difference. Higher CFG = stronger prompt adherence but less diversity. Used in all modern image/3D generators.">Classifier-Free Guidance</span> (CFG) that makes the generator follow the input image more closely.</p>
+
+            <p>Think of it like this: you ask an artist to paint "a red apple." They paint two versions:</p>
+            <ul style="list-style: none; padding-left: 0;">
+                <li style="margin-bottom: var(--space-3);">🎨 <strong>Version A</strong>: Ignoring your request (just any apple)</li>
+                <li style="margin-bottom: var(--space-3);">🎨 <strong>Version B</strong>: Following your request (red apple)</li>
+            </ul>
+
+            <p>Then they exaggerate the difference: "What makes B more 'red apple' than A? Let me amplify that."</p>
+
+            <div class="code-translation">
+                <div class="code-panel left">
+                    <h4>Real Code</h4>
+                    <pre><code><span class="comment"># CFG formula</span>
+noise_pred_cond = <span class="function">model</span>(latent, img_cond)
+noise_pred_uncond = <span class="function">model</span>(latent, <span class="keyword">None</span>)
+
+noise_pred = noise_pred_uncond + \
+    cfg_strength * (
+        noise_pred_cond - noise_pred_uncond
+    )</code></pre>
+                </div>
+                <div class="code-panel right">
+                    <h4>What It Means</h4>
+                    <pre>Run the model WITH the image condition.
+This is "guided generation"
+
+Run the model WITHOUT the condition.
+This is "random generation"
+
+Take the unconditioned prediction, then push it
+toward the conditioned version.
+cfg_strength controls how much to push.
+Higher = follows image more strictly</pre>
+                </div>
+            </div>
+
+            <div class="callout">
+                <h4>Aha! CFG Is a Quality vs Diversity Tradeoff</h4>
+                <p><strong>Low CFG (1.5)</strong>: More diverse outputs, less faithful to input. Good for exploration.</p>
+                <p><strong>High CFG (7.0)</strong>: Very faithful to input, but less diversity. Can over-fit and create artifacts.</p>
+                <p>SAM 3D uses cfg_strength=3.0 as a sweet spot. When tuning AI image generators, cfg_strength is your main "how closely should this match my prompt?" dial.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>The Diffusion Loop</h3>
+
+            <div class="group-chat">
+                <div class="chat-message left">
+                    <div class="chat-sender">🎲 Noise (timestep 50/50)</div>
+                    <div class="chat-bubble">I'm pure random static. Help!</div>
+                </div>
+
+                <div class="chat-message right">
+                    <div class="chat-sender">🧠 Generator Network</div>
+                    <div class="chat-bubble">I'll denoise you step by step, guided by this elephant photo...</div>
+                </div>
+
+                <div class="chat-message left">
+                    <div class="chat-sender">🌫️ Less Noisy (timestep 25/50)</div>
+                    <div class="chat-bubble">I'm starting to look like... something vaguely elephant-shaped?</div>
+                </div>
+
+                <div class="chat-message right">
+                    <div class="chat-sender">🧠 Generator Network</div>
+                    <div class="chat-bubble">Good! Keep refining... adding trunk details, leg positions...</div>
+                </div>
+
+                <div class="chat-message left">
+                    <div class="chat-sender">✨ Clean Latent (timestep 0/50)</div>
+                    <div class="chat-bubble">Done! I'm a structured latent code representing an elephant's 3D shape.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Why Transformers?</h3>
+            <p>SAM 3D's generators are <span class="tooltip-term" data-tooltip="Transformer: A neural network architecture that processes sequences using attention mechanisms — it can focus on relevant parts of input. Invented for language (GPT, Claude), now used everywhere: images (ViT), video, audio, 3D. The 'Attention Is All You Need' paper that started it all.">Transformers</span>, not traditional <span class="tooltip-term" data-tooltip="CNN: Convolutional Neural Network — the classic architecture for image processing. Uses sliding filters to detect patterns like edges, textures, shapes. Great for images but less flexible than Transformers. Think of it as a specialized tool vs Transformer's multi-tool.">CNNs</span>.</p>
+
+            <p>Why? Because Transformers have two superpowers:</p>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">🔍</div>
+                    <h4>Attention</h4>
+                    <p>They can "look" at the entire image at once and focus on relevant parts. CNNs only see small local patches.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🧩</div>
+                    <h4>Flexibility</h4>
+                    <p>They handle variable-length inputs easily. Perfect for sparse tensors where the number of voxels changes per object.</p>
+                </div>
+            </div>
+
+            <div class="callout">
+                <h4>The Trend in AI</h4>
+                <p>2015-2020: CNNs dominated computer vision.</p>
+                <p>2020-now: Transformers are replacing CNNs everywhere — images, video, 3D, even audio.</p>
+                <p>When building new models, default to Transformers unless you have a specific reason to use CNNs (like extreme efficiency constraints on mobile).</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Module 5 Quiz</h3>
+
+            <div class="quiz">
+                <h4>Test Your Understanding</h4>
+
+                <div class="quiz-question" data-answer="1">
+                    <p>1. Users complain generation takes too long. You profile and find 95% of time is in the diffusion loop. What's the best fix?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Increase cfg_strength to make each step more effective</div>
+                        <div class="quiz-option" data-value="1">Reduce inference_steps from 50 to 25 (roughly 2x speedup)</div>
+                        <div class="quiz-option" data-value="2">Switch from Transformers to CNNs</div>
+                        <div class="quiz-option" data-value="3">Skip CFG entirely to save compute</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="2">
+                    <p>2. Generated objects look generic and don't match the input images well. What would help?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Reduce cfg_strength to 1.0 for more diversity</div>
+                        <div class="quiz-option" data-value="1">Reduce inference_steps to make generation faster</div>
+                        <div class="quiz-option" data-value="2">Increase cfg_strength to 5.0 to follow input more closely</div>
+                        <div class="quiz-option" data-value="3">Use a different random seed</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="0">
+                    <p>3. You want to add a feature that generates multiple variations of the same object. How would you do it?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Run inference multiple times with different random seeds — the initial noise determines variation</div>
+                        <div class="quiz-option" data-value="1">Run inference once but use multiple cfg_strength values</div>
+                        <div class="quiz-option" data-value="2">Train a separate "variation generator" model</div>
+                        <div class="quiz-option" data-value="3">Can't do it — diffusion models are deterministic</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Module 6: From Latents to 3D Outputs -->
+    <section id="module6">
+        <div class="module-content">
+            <div class="hero">
+                <h2>From Latents to 3D</h2>
+                <p>You've got a sparse tensor full of mysterious 8-dimensional features.</p>
+                <p>How do you turn that into something you can actually VIEW — a mesh, a Gaussian splat, a 3D model?</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>The Decoders</h3>
+            <p>SAM 3D has TWO decoders that convert the same latent features into different 3D formats:</p>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">✨</div>
+                    <h4>Gaussian Decoder</h4>
+                    <p>Outputs a cloud of 3D Gaussian "splats" — great for rendering and real-time viewing</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📐</div>
+                    <h4>Mesh Decoder</h4>
+                    <p>Outputs a triangle mesh with texture — compatible with Blender, Unity, game engines</p>
+                </div>
+            </div>
+
+            <p>Both decoders are neural networks trained to interpret the 8D latent features.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Gaussian Splats Explained</h3>
+            <p>A <strong>Gaussian splat</strong> is like a 3D paintbrush stroke. Each splat is defined by:</p>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">📍</div>
+                    <h4>Position (x, y, z)</h4>
+                    <p>Where in 3D space the splat is</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎨</div>
+                    <h4>Color (r, g, b)</h4>
+                    <p>What color the splat contributes</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">↔️</div>
+                    <h4>Covariance (3×3 matrix)</h4>
+                    <p>How the splat is stretched and rotated</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">👁️</div>
+                    <h4>Opacity (α)</h4>
+                    <p>How transparent the splat is</p>
+                </div>
+            </div>
+
+            <p>Think of it like this: traditional meshes are made of hard triangles. Gaussian splats are made of soft, glowing clouds.</p>
+
+            <div class="callout">
+                <h4>Why Gaussian Splats?</h4>
+                <p>They're FAST to render — way faster than triangle meshes with millions of polygons. A splat is just "paint this blurry circle from this angle."</p>
+                <p>They also handle transparency and fine details (like hair, fur, foliage) better than meshes. The tradeoff: splats are harder to edit in 3D modeling software.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Gaussian Decoder Under the Hood</h3>
+
+            <div class="code-translation">
+                <div class="code-panel left">
+                    <h4>Real Code</h4>
+                    <pre><code><span class="comment"># Decode sparse latent to Gaussian</span>
+gs_output = <span class="function">slat_decoder_gs</span>(slat)
+
+<span class="comment"># Extract Gaussian parameters</span>
+xyz = gs_output[<span class="string">'xyz'</span>]          <span class="comment"># [N, 3]</span>
+features_dc = gs_output[<span class="string">'f_dc'</span>]  <span class="comment"># [N, 3]</span>
+scaling = gs_output[<span class="string">'scaling'</span>]  <span class="comment"># [N, 3]</span>
+rotation = gs_output[<span class="string">'rotation'</span>] <span class="comment"># [N, 4]</span>
+opacity = gs_output[<span class="string">'opacity'</span>]  <span class="comment"># [N, 1]</span>
+
+<span class="comment"># Create Gaussian model</span>
+gaussian = <span class="function">Gaussian</span>(xyz, features_dc,
+                     scaling, rotation, opacity)</code></pre>
+                </div>
+                <div class="code-panel right">
+                    <h4>What It Means</h4>
+                    <pre>Run the decoder network on the sparse tensor.
+It outputs all the parameters needed for Gaussians.
+
+For each of the N occupied voxels, extract:
+- Position in 3D space
+- RGB color (DC component of spherical harmonics)
+- 3D scale (how stretched the splat is)
+- Rotation quaternion (orientation)
+- Transparency value
+
+Package all parameters into a Gaussian representation
+that can be rendered or saved as PLY</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Mesh Decoder: From Splats to Triangles</h3>
+            <p>The mesh decoder takes the same sparse latent and outputs a triangle mesh instead.</p>
+
+            <div class="data-flow">
+                <h4>Mesh Generation Pipeline</h4>
+                <div class="flow-diagram">
+                    <div class="flow-node">Sparse Latent</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">Mesh Decoder</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">Triangle Mesh</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">Texture Baking</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node">GLB Export</div>
+                </div>
+            </div>
+
+            <p>The decoder outputs:</p>
+            <ul style="list-style: none; padding-left: 0;">
+                <li style="margin-bottom: var(--space-3);">✅ <strong>Vertices</strong>: 3D points defining the mesh surface</li>
+                <li style="margin-bottom: var(--space-3);">✅ <strong>Faces</strong>: Triangles connecting the vertices</li>
+                <li style="margin-bottom: var(--space-3);">✅ <strong>Vertex Colors</strong>: RGB color at each vertex</li>
+            </ul>
+
+            <p>Then post-processing bakes those vertex colors into a texture image (like unwrapping a 3D object into a flat UV map).</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Post-Processing Magic</h3>
+            <p>After decoding, SAM 3D runs several cleanup steps:</p>
+
+            <div class="architecture">
+                <div class="arch-layer">
+                    <h4>🔧 Mesh Simplification</h4>
+                    <p>Reduce triangle count by 95% while preserving shape. A 100K triangle mesh becomes 5K triangles — way easier to work with in <span class="tooltip-term" data-tooltip="Blender: A free, open-source 3D modeling software. Like Photoshop for 3D — sculpting, animation, rendering, everything. Industry-standard for indie game dev and motion graphics.">Blender</span> or game engines.</p>
+                </div>
+
+                <div class="arch-layer">
+                    <h4>🎨 Texture Baking</h4>
+                    <p>Convert vertex colors into a 1024×1024 texture image. This lets you edit colors in image editing software instead of tweaking individual vertices.</p>
+                </div>
+
+                <div class="arch-layer">
+                    <h4>📐 ICP Alignment</h4>
+                    <p>Align the mesh to the depth map using <span class="tooltip-term" data-tooltip="ICP: Iterative Closest Point — an algorithm that aligns two 3D shapes by minimizing the distance between corresponding points. Iteratively adjusts rotation and translation until they snap together.">ICP</span>. Ensures the final model matches real-world geometry.</p>
+                </div>
+            </div>
+
+            <div class="callout">
+                <h4>Aha! Simplification Is Lossy But Necessary</h4>
+                <p>Neural mesh decoders often output dense, noisy geometry — millions of tiny triangles.</p>
+                <p>Simplification (also called "decimation") removes unnecessary triangles. It's lossy — you lose some detail — but necessary for real-world use. A 1M triangle mesh crashes most game engines.</p>
+                <p>When exporting AI-generated meshes, always simplify. The 95% reduction is aggressive but works well for SAM 3D's output.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Module 6 Quiz</h3>
+
+            <div class="quiz">
+                <h4>Test Your Understanding</h4>
+
+                <div class="quiz-question" data-answer="0">
+                    <p>1. You want to use SAM 3D output in a Unity game. Should you export as Gaussian splats (PLY) or mesh (GLB)?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">GLB mesh — Unity has built-in mesh support, splats require custom rendering</div>
+                        <div class="quiz-option" data-value="1">PLY splats — they render faster and look better</div>
+                        <div class="quiz-option" data-value="2">Both — use splats for LOD and mesh for collisions</div>
+                        <div class="quiz-option" data-value="3">Neither — Unity can't import AI-generated 3D</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="2">
+                    <p>2. Your exported meshes have 500K triangles and Blender is lagging. What should you do?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Retrain the mesh decoder to output fewer triangles</div>
+                        <div class="quiz-option" data-value="1">Switch to Gaussian splats — they're always smaller</div>
+                        <div class="quiz-option" data-value="2">Increase the simplification ratio in post-processing (e.g., 0.95 → 0.98)</div>
+                        <div class="quiz-option" data-value="3">Use a different 3D software — the mesh is fine</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="1">
+                    <p>3. You want to edit the texture of a generated model (change colors, add decals). Which format makes that easiest?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Gaussian splats — you can edit splat colors directly</div>
+                        <div class="quiz-option" data-value="1">GLB mesh with baked texture — open the texture PNG in Photoshop</div>
+                        <div class="quiz-option" data-value="2">Both are equally hard to edit</div>
+                        <div class="quiz-option" data-value="3">You can't edit AI-generated textures</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Module 7: The Big Picture -->
+    <section id="module7">
+        <div class="module-content">
+            <div class="hero">
+                <h2>The Big Picture</h2>
+                <p>Let's zoom out and see how all the pieces fit together.</p>
+                <p>From photo to 3D model in 7 steps.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>The Full Pipeline</h3>
+
+            <div class="architecture">
+                <div class="arch-layer" style="border-color: #E8573A;">
+                    <h4>📷 Input: Image + Mask</h4>
+                    <div class="arch-components">
+                        <div class="arch-component">RGB Image (518×518)</div>
+                        <div class="arch-component">Object Mask</div>
+                    </div>
+                </div>
+
+                <div class="arch-layer" style="border-color: #89B4FA;">
+                    <h4>📏 Depth Estimation</h4>
+                    <div class="arch-components">
+                        <div class="arch-component">MoGe Model</div>
+                        <div class="arch-component">Point Map (H×W×3)</div>
+                        <div class="arch-component">Scene Scale/Shift</div>
+                    </div>
+                </div>
+
+                <div class="arch-layer" style="border-color: #CBA6F7;">
+                    <h4>🔲 Stage 1: Sparse Structure</h4>
+                    <div class="arch-components">
+                        <div class="arch-component">Condition Embedder</div>
+                        <div class="arch-component">SS Generator (50 steps)</div>
+                        <div class="arch-component">SS Decoder</div>
+                        <div class="arch-component">Sparse Coords (~500)</div>
+                    </div>
+                </div>
+
+                <div class="arch-layer" style="border-color: #A6E3A1;">
+                    <h4>🎨 Stage 2: Shape Latent</h4>
+                    <div class="arch-components">
+                        <div class="arch-component">Condition Embedder</div>
+                        <div class="arch-component">SLAT Generator (50 steps)</div>
+                        <div class="arch-component">SparseTensor (8D features)</div>
+                    </div>
+                </div>
+
+                <div class="arch-layer" style="border-color: #F9E2AF;">
+                    <h4>📐 Pose Estimation</h4>
+                    <div class="arch-components">
+                        <div class="arch-component">Pose Decoder</div>
+                        <div class="arch-component">Rotation (quaternion)</div>
+                        <div class="arch-component">Translation (x,y,z)</div>
+                        <div class="arch-component">Scale (sx,sy,sz)</div>
+                    </div>
+                </div>
+
+                <div class="arch-layer" style="border-color: #FAB387;">
+                    <h4>✨ Decoding to 3D</h4>
+                    <div class="arch-components">
+                        <div class="arch-component">Gaussian Decoder → PLY</div>
+                        <div class="arch-component">Mesh Decoder → GLB</div>
+                    </div>
+                </div>
+
+                <div class="arch-layer" style="border-color: #94E2D5;">
+                    <h4>🔧 Post-Processing</h4>
+                    <div class="arch-components">
+                        <div class="arch-component">Mesh Simplification (95%)</div>
+                        <div class="arch-component">Texture Baking (1024×1024)</div>
+                        <div class="arch-component">ICP Alignment</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Decision Guide: When to Tweak What</h3>
+            <p>Now that you understand the architecture, here's a practical guide for steering AI when modifying SAM 3D:</p>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">🐛</div>
+                    <h4>Poor Shape Quality</h4>
+                    <p>➜ Tune Stage 1: increase inference_steps, adjust cfg_strength, check sparse coordinate count</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎨</div>
+                    <h4>Blurry Textures</h4>
+                    <p>➜ Tune Stage 2: increase latent dimensions, more inference_steps, better training data</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">↻</div>
+                    <h4>Wrong Rotation</h4>
+                    <p>➜ Check pose decoder: verify coordinate conventions, inspect depth map quality</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📏</div>
+                    <h4>Wrong Scale</h4>
+                    <p>➜ Check depth model: ensure MoGe is getting good scene scale estimates</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⏱️</div>
+                    <h4>Too Slow</h4>
+                    <p>➜ Reduce inference_steps in generators, enable model compilation, use smaller models</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💾</div>
+                    <h4>Out of Memory</h4>
+                    <p>➜ Reduce sparse coordinate count, lower latent dimensions, use bfloat16 instead of float32</p>
+                </div>
+            </div>
+
+            <div class="callout">
+                <h4>The Universal Debugging Pattern</h4>
+                <p>When something breaks in a multi-stage AI pipeline:</p>
+                <ol style="padding-left: var(--space-6);">
+                    <li style="margin-bottom: var(--space-2);"><strong>Isolate the stage</strong> — run each component separately and inspect outputs</li>
+                    <li style="margin-bottom: var(--space-2);"><strong>Visualize intermediate results</strong> — render the sparse structure, check depth maps, plot latent distributions</li>
+                    <li style="margin-bottom: var(--space-2);"><strong>Compare to known-good examples</strong> — does the depth map look reasonable? Are sparse coords in the right range?</li>
+                    <li style="margin-bottom: var(--space-2);"><strong>Binary search the config</strong> — revert to default settings, change one thing at a time</li>
+                </ol>
+                <p>This works for ANY AI pipeline — image generation, speech synthesis, video understanding. Break it down, visualize, compare, iterate.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>Final Quiz: Real-World Scenarios</h3>
+
+            <div class="quiz">
+                <h4>Test Your Mastery</h4>
+
+                <div class="quiz-question" data-answer="2">
+                    <p>1. You're deploying SAM 3D on a web server. Users upload photos and get 3D models. It works but is expensive — $0.50 per generation on GPU. How would you cut costs?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Switch to CPU inference to save money</div>
+                        <div class="quiz-option" data-value="1">Skip Stage 2 and only generate sparse structure</div>
+                        <div class="quiz-option" data-value="2">Reduce inference_steps to 25 (2x speedup), enable model compilation, batch multiple requests</div>
+                        <div class="quiz-option" data-value="3">Use a smaller depth model or skip depth entirely</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="1">
+                    <p>2. You want to fine-tune SAM 3D on furniture to improve quality for indoor scenes. Which component should you focus training on?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">The depth model — furniture needs better depth estimates</div>
+                        <div class="quiz-option" data-value="1">Stage 1 and Stage 2 generators — they learn furniture-specific structure and appearance</div>
+                        <div class="quiz-option" data-value="2">The decoders — they need to learn furniture-specific mesh topology</div>
+                        <div class="quiz-option" data-value="3">All components equally</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="0">
+                    <p>3. You've built a modified version that generates animations (moving 3D models). Where did you add the animation logic?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">After Stage 2 — added a temporal latent generator that conditions on the sparse tensor</div>
+                        <div class="quiz-option" data-value="1">Before Stage 1 — need to plan motion before generating structure</div>
+                        <div class="quiz-option" data-value="2">In the decoders — they output animated Gaussians/meshes directly</div>
+                        <div class="quiz-option" data-value="3">In post-processing — ICP can align across time</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <div class="quiz-question" data-answer="3">
+                    <p>4. A user reports: "I generated a 3D model of my coffee mug, but when I load it in Unity, the handle is facing the wrong way." What's the likely issue?</p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-value="0">Stage 1 didn't capture the handle structure correctly</div>
+                        <div class="quiz-option" data-value="1">The mesh decoder rotated the geometry during export</div>
+                        <div class="quiz-option" data-value="2">Unity imported the model with the wrong up axis</div>
+                        <div class="quiz-option" data-value="3">Pose decoder estimated rotation incorrectly, or coordinate convention mismatch between SAM 3D and Unity</div>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="module-content">
+            <h3>You've Mastered SAM 3D!</h3>
+            <p>You now understand:</p>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">🎯</div>
+                    <h4>The Architecture</h4>
+                    <p>Two-stage generation, sparse representations, depth-guided pose</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🧠</div>
+                    <h4>The Components</h4>
+                    <p>What each neural network does and why it's there</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔧</div>
+                    <h4>The Tradeoffs</h4>
+                    <p>Quality vs speed, sparse vs dense, CFG tuning, format choices</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🐛</div>
+                    <h4>Debugging</h4>
+                    <p>How to isolate problems and steer AI to fix them</p>
+                </div>
+            </div>
+
+            <div class="callout">
+                <h4>What's Next?</h4>
+                <p>Now that you understand how SAM 3D works, you can:</p>
+                <ul style="padding-left: var(--space-6);">
+                    <li style="margin-bottom: var(--space-2);">Modify the pipeline for your use case (faster inference, different output formats, custom objects)</li>
+                    <li style="margin-bottom: var(--space-2);">Debug issues confidently when AI gets stuck</li>
+                    <li style="margin-bottom: var(--space-2);">Make informed architecture decisions ("should I add a third stage or modify Stage 2?")</li>
+                    <li style="margin-bottom: var(--space-2);">Communicate precisely with AI coding agents using the right technical vocabulary</li>
+                </ul>
+                <p>You're no longer just using the model — you understand what's happening under the hood. That's the difference between instructing AI blindly and steering it like a pro.</p>
+            </div>
+
+            <p style="text-align: center; margin-top: var(--space-12); font-size: var(--text-2xl); color: var(--color-accent); font-family: var(--font-display); font-weight: 700;">🎉 Course Complete! 🎉</p>
+        </div>
+    </section>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ===== Scroll Progress Tracking =====
+            const sections = document.querySelectorAll('section');
+            const progressFill = document.getElementById('progressFill');
+            const scrollIndicator = document.getElementById('scrollIndicator');
+            const keyboardHint = document.getElementById('keyboardHint');
+
+            let currentModule = 0;
+            const totalModules = 7;
+
+            // Show keyboard hint briefly on load
+            setTimeout(() => {
+                keyboardHint.classList.add('show');
+                setTimeout(() => keyboardHint.classList.remove('show'), 3000);
+            }, 1000);
+
+            function updateProgress() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = (scrollTop / scrollHeight) * 100;
+
+                progressFill.style.width = scrollPercent + '%';
+
+                // Update module indicator
+                sections.forEach((section, index) => {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+                        const moduleNum = Math.floor(index / 6) + 1;
+                        if (moduleNum <= totalModules) {
+                            currentModule = moduleNum;
+                            scrollIndicator.textContent = `Module ${currentModule} of ${totalModules}`;
+                        }
+                    }
+                });
+
+                scrollIndicator.classList.add('show');
+            }
+
+            // ===== Intersection Observer for Animations =====
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            sections.forEach(section => observer.observe(section));
+
+            // ===== Keyboard Navigation =====
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const current = Math.floor(window.pageYOffset / window.innerHeight);
+                    if (current < sections.length - 1) {
+                        sections[current + 1].scrollIntoView({ behavior: 'smooth' });
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const current = Math.floor(window.pageYOffset / window.innerHeight);
+                    if (current > 0) {
+                        sections[current - 1].scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+
+            // ===== Scroll Event Listener =====
+            let scrollTimeout;
+            window.addEventListener('scroll', () => {
+                updateProgress();
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    scrollIndicator.classList.remove('show');
+                }, 2000);
+            }, { passive: true });
+
+            // ===== Tooltip System =====
+            const tooltip = document.getElementById('tooltip');
+            const tooltipTerms = document.querySelectorAll('.tooltip-term');
+
+            tooltipTerms.forEach(term => {
+                term.addEventListener('mouseenter', (e) => {
+                    const content = term.getAttribute('data-tooltip');
+                    tooltip.textContent = content;
+                    tooltip.classList.add('show');
+                    positionTooltip(e.target);
+                });
+
+                term.addEventListener('mouseleave', () => {
+                    tooltip.classList.remove('show');
+                });
+
+                term.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const content = term.getAttribute('data-tooltip');
+                    tooltip.textContent = content;
+                    tooltip.classList.toggle('show');
+                    if (tooltip.classList.contains('show')) {
+                        positionTooltip(e.target);
+                    }
+                });
+            });
+
+            function positionTooltip(element) {
+                const rect = element.getBoundingClientRect();
+                const tooltipRect = tooltip.getBoundingClientRect();
+
+                let top = rect.bottom + window.scrollY + 8;
+                let left = rect.left + window.scrollX;
+
+                // Keep tooltip in viewport
+                if (left + tooltipRect.width > window.innerWidth) {
+                    left = window.innerWidth - tooltipRect.width - 16;
+                }
+
+                if (top + tooltipRect.height > window.innerHeight + window.scrollY) {
+                    top = rect.top + window.scrollY - tooltipRect.height - 8;
+                }
+
+                tooltip.style.top = top + 'px';
+                tooltip.style.left = left + 'px';
+            }
+
+            // Close tooltip on outside click
+            document.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('tooltip-term') && !tooltip.contains(e.target)) {
+                    tooltip.classList.remove('show');
+                }
+            });
+
+            // ===== Quiz System =====
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+
+            quizQuestions.forEach(question => {
+                const correctAnswer = parseInt(question.getAttribute('data-answer'));
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = question.querySelector('.quiz-feedback');
+
+                const feedbacks = [
+                    // Module 1 Q1
+                    {
+                        correct: "Exactly! Sketches have no depth information, so the depth model (which analyzes lighting and perspective to infer 3D) wouldn't work. You'd need a different approach — maybe a sketch-to-depth model or a different input entirely.",
+                        incorrect: "Not quite. The decoders (Gaussian and mesh) take 3D latents and convert them to output formats — they don't care whether the input was a photo or sketch. The depth model, however, relies on visual cues that sketches don't have."
+                    },
+                    // Module 1 Q2
+                    {
+                        correct: "Exactly! The pose decoder estimates rotation (as a quaternion), translation, and scale. If models are consistently rotated wrong, the pose estimation is likely off — maybe a coordinate system mismatch or incorrect camera conventions.",
+                        incorrect: "Not quite. The pose decoder specifically handles rotation, translation, and scale estimation. While other components affect the final model, orientation issues point directly to pose estimation."
+                    },
+                    // Module 1 Q3
+                    {
+                        correct: "Exactly! The pose decoder already estimates scale as part of scene-aware pose estimation. You could extend it to output scale in centimeters instead of relative units by calibrating against the depth map's metric scale.",
+                        incorrect: "Not quite. The pose decoder already computes scale as part of its scene-aware estimation. It uses the depth map to understand real-world geometry, so it's the natural place to extract metric size."
+                    },
+                    // Module 2 Q1
+                    {
+                        correct: "Exactly! Diffusion models scale linearly with inference_steps. Going from 50 to 25 steps roughly halves generation time with minimal quality loss. This is the first thing to try before architectural changes.",
+                        incorrect: "Not quite. Reducing inference_steps is the most effective speedup for diffusion models — it's a direct time/quality tradeoff. Skipping stages or changing grid size would hurt quality significantly."
+                    },
+                    // Module 2 Q2
+                    {
+                        correct: "Exactly! Stage 2 generates the appearance features (latents) that become textures. If shapes are good but textures are blurry, Stage 2 likely needs more capacity (higher latent dimensions) or better training data.",
+                        incorrect: "Not quite. Stage 1 handles structure (WHERE things are), not appearance. The depth model helps with geometry, not texture quality. Stage 2 is responsible for generating the appearance features that become textures."
+                    },
+                    // Module 2 Q3
+                    {
+                        correct: "Exactly! The coarse-to-fine pattern suggests: structure (Stage 1) → appearance (Stage 2) → motion (Stage 3). You'd take the sparse tensor from Stage 2 and add temporal latents describing movement.",
+                        incorrect: "Not quite. Following the coarse-to-fine pattern, motion would build on top of the appearance features from Stage 2. You need the spatial structure before adding temporal dynamics."
+                    },
+                    // Module 3 Q1
+                    {
+                        correct: "Exactly! A 128³ grid has 2 million voxels, but 10 scattered objects might occupy only 1-2% of that space. Sparse representation would save ~98% of memory and make operations way faster.",
+                        incorrect: "Not quite. Even though the grid is large, 10 scattered objects in a 128³ space means ~98% of voxels are empty. Sparse representation thrives in this scenario — massive memory and speed gains."
+                    },
+                    // Module 3 Q2
+                    {
+                        correct: "Exactly! The first dimension of both tensors is N (number of occupied voxels). coords.shape[1] = 4 means (batch, x, y, z). feats.shape[1] = 16 is the feature dimension.",
+                        incorrect: "Not quite. In sparse tensors, coords.shape = [N, 4] means N occupied voxels with 4 values each (batch index + x,y,z). feats.shape = [N, C] means those same N voxels each have C-dimensional features."
+                    },
+                    // Module 3 Q3
+                    {
+                        correct: "Exactly! Sparse convolution time scales with the number of occupied voxels. If Stage 1 outputs fewer coordinates (e.g., downsampling from 800 to 400), Stage 2 runs ~2x faster with minimal quality loss.",
+                        incorrect: "Not quite. Sparse operations are fast BECAUSE they skip empty voxels. Reducing the number of occupied voxels (by downsampling Stage 1 output) directly reduces compute time in Stage 2."
+                    },
+                    // Module 4 Q1
+                    {
+                        correct: "Exactly! Scene scale comes from the depth model. If furniture is inconsistently sized, MoGe is probably getting confused about scale — maybe due to unusual camera angles, reflections, or training data bias toward certain object types.",
+                        incorrect: "Not quite. The generators work in normalized coordinates — they don't directly control real-world scale. The depth model provides the metric scale estimates that determine whether the 16×16×16 grid represents a toy or a building."
+                    },
+                    // Module 4 Q2
+                    {
+                        correct: "Exactly! Depth is not optional — it's deeply integrated. Pose estimation needs geometry to estimate rotation and translation. Coordinate normalization needs scene scale. Layout optimization aligns to the point map. All three would break.",
+                        incorrect: "Not quite. While layout optimization is the most obvious use of depth, the depth map also guides pose estimation and coordinate normalization. Skipping it would break multiple critical components."
+                    },
+                    // Module 4 Q3
+                    {
+                        correct: "Exactly! For multi-object scenes, you'd run MoGe once on the full image, then segment the point map by object masks. Each object gets normalized in its own coordinate frame while maintaining spatial relationships.",
+                        incorrect: "Not quite. Running MoGe once on the full scene is more efficient and gives better spatial relationships between objects. The key is segmenting the depth map by masks so each object can be normalized independently."
+                    },
+                    // Module 5 Q1
+                    {
+                        correct: "Exactly! Diffusion generation time is dominated by the number of steps. Halving inference_steps gives ~2x speedup with surprisingly good quality. It's the most effective single change for performance.",
+                        incorrect: "Not quite. cfg_strength affects quality, not speed. Switching architectures is a massive change. The diffusion loop is the bottleneck, and reducing steps is the direct way to speed it up."
+                    },
+                    // Module 5 Q2
+                    {
+                        correct: "Exactly! Higher cfg_strength means the model follows the input image more closely. If outputs are too generic, it's not adhering to the conditioning strongly enough. Increasing CFG amplifies the guidance.",
+                        incorrect: "Not quite. Lower CFG or fewer steps would make outputs MORE generic, not less. When you want the model to match the input more closely, increase cfg_strength."
+                    },
+                    // Module 5 Q3
+                    {
+                        correct: "Exactly! Diffusion is stochastic — the initial noise determines variation. Same seed = same output. Different seeds = different variations. No need to change the architecture or retrain anything.",
+                        incorrect: "Not quite. Diffusion models are stochastic when you change the random seed. The initial noise is what varies. cfg_strength and inference_steps affect quality/speed, not variation."
+                    },
+                    // Module 6 Q1
+                    {
+                        correct: "Exactly! Unity (and most game engines) work with triangle meshes out of the box. Gaussian splats need custom shaders and rendering code. Use GLB for compatibility unless you're willing to implement splat rendering.",
+                        incorrect: "Not quite. While splats render fast, Unity doesn't have built-in support for Gaussian splat rendering. You'd need custom shaders. GLB meshes work immediately with Unity's standard pipeline."
+                    },
+                    // Module 6 Q2
+                    {
+                        correct: "Exactly! The post-processing simplification ratio controls how aggressively meshes are decimated. Increasing from 0.95 (5K triangles) to 0.98 (2K triangles) gives you a lighter mesh that's easier to work with.",
+                        incorrect: "Not quite. The mesh decoder outputs dense geometry, but post-processing simplifies it. Increasing the simplification ratio (0.95 → 0.98) reduces triangle count without retraining anything."
+                    },
+                    // Module 6 Q3
+                    {
+                        correct: "Exactly! GLB with baked texture gives you a standard PNG image file you can edit in any image editor. Change the texture, re-import to Blender/Unity, done. Gaussian splats require editing per-splat color values — way harder.",
+                        incorrect: "Not quite. Gaussian splats store color per-splat, which is hard to edit visually. GLB with baked textures gives you a 2D image you can paint on in Photoshop, Krita, etc."
+                    },
+                    // Module 7 Q1
+                    {
+                        correct: "Exactly! This hits all the effective speedups: fewer diffusion steps (direct 2x), compilation (10-20% faster), and batching (better GPU utilization). CPU inference would be 100x slower.",
+                        incorrect: "Not quite. CPU inference is way slower than GPU. Skipping stages destroys quality. Depth is relatively cheap. The best approach is to optimize the bottlenecks: diffusion steps, compilation, and batching."
+                    },
+                    // Module 7 Q2
+                    {
+                        correct: "Exactly! The generators learn domain-specific priors. Fine-tuning Stage 1 and Stage 2 on furniture data would teach them furniture-specific structure and appearance. Decoders and depth models are more generic.",
+                        incorrect: "Not quite. The depth model is pre-trained and generic. Decoders are also fairly generic (they just convert latents to 3D formats). The generators (Stage 1 and Stage 2) learn the specific patterns of objects and would benefit most from fine-tuning."
+                    },
+                    // Module 7 Q3
+                    {
+                        correct: "Exactly! Following the coarse-to-fine pattern: structure → appearance → motion. You'd build a temporal generator that takes the spatial sparse tensor and adds time-varying latents. This is how video generation models work too.",
+                        incorrect: "Not quite. Animation needs the spatial structure first (Stage 1 and Stage 2), then you add temporal dynamics. The natural place is after Stage 2, conditioning on the sparse tensor with appearance features."
+                    },
+                    // Module 7 Q4
+                    {
+                        correct: "Exactly! Orientation issues almost always trace back to pose estimation or coordinate convention mismatches. SAM 3D uses PyTorch3D conventions (Y-up), but Unity uses Y-up with different handedness. Check pose decoder output and apply the right rotation transform on import.",
+                        incorrect: "Not quite. If the handle structure exists but is rotated, the generators did their job. This is a pose/orientation issue. Check the pose decoder's rotation output and the coordinate convention mismatch between SAM 3D (PyTorch3D) and Unity."
+                    }
+                ];
+
+                const questionIndex = Array.from(document.querySelectorAll('.quiz-question')).indexOf(question);
+
+                options.forEach((option, index) => {
+                    option.addEventListener('click', () => {
+                        // Remove previous selections
+                        options.forEach(opt => {
+                            opt.classList.remove('selected', 'correct', 'incorrect');
+                        });
+
+                        // Mark selection
+                        option.classList.add('selected');
+
+                        // Check answer
+                        if (index === correctAnswer) {
+                            option.classList.add('correct');
+                            feedback.className = 'quiz-feedback correct show';
+                            feedback.textContent = '✓ ' + feedbacks[questionIndex].correct;
+                        } else {
+                            option.classList.add('incorrect');
+                            feedback.className = 'quiz-feedback incorrect show';
+                            feedback.textContent = '✗ ' + feedbacks[questionIndex].incorrect;
+                        }
+                    });
+                });
+            });
+
+            // Initialize on load
+            updateProgress();
+        })();
+    </script>
+</body>
+</html>
