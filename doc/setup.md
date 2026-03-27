@@ -55,4 +55,24 @@ mv checkpoints/${TAG}-download/checkpoints checkpoints/${TAG}
 rm -rf checkpoints/${TAG}-download
 ```
 
+## 3. Running the Web Interface
+
+After setup is complete, you can launch the interactive web interface:
+
+```bash
+# Use the launcher script (easiest)
+./launch_web_demo.sh
+
+# Or manually with custom options
+python web_demo.py --port 7860
+```
+
+The web interface will be accessible at `http://localhost:7860`.
+
+**Available Options:**
+- `--port PORT`: Specify a different port (default: 7860)
+- `--share`: Create a public Gradio share link
+- `--no-compile`: Disable model compilation for faster startup
+- `--server-name HOST`: Set the server host (use `0.0.0.0` to allow connections from other devices)
+
 
